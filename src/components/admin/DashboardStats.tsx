@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { getUsers } from '@/lib/api';
+import { useEffect, useState } from "react";
+import { getUsers } from "@/lib/api";
 
 export default function DashboardStats() {
   const [stats, setStats] = useState({
@@ -15,12 +15,12 @@ export default function DashboardStats() {
     const fetchStats = async () => {
       try {
         const { users, pagination } = await getUsers(1, 1);
-        setStats(prev => ({
+        setStats((prev) => ({
           ...prev,
           totalUsers: pagination.total,
         }));
       } catch (error) {
-        console.error('Failed to fetch stats:', error);
+        console.error("Failed to fetch stats:", error);
       } finally {
         setLoading(false);
       }
@@ -52,7 +52,7 @@ export default function DashboardStats() {
             <dl>
               <dt className="text-sm font-medium text-gray-500">Total Users</dt>
               <dd className="text-2xl font-semibold text-gray-900">
-                {loading ? '...' : stats.totalUsers}
+                {loading ? "..." : stats.totalUsers}
               </dd>
             </dl>
           </div>
@@ -78,7 +78,9 @@ export default function DashboardStats() {
           </div>
           <div className="ml-5 w-0 flex-1">
             <dl>
-              <dt className="text-sm font-medium text-gray-500">Active Orders</dt>
+              <dt className="text-sm font-medium text-gray-500">
+                Active Orders
+              </dt>
               <dd className="text-2xl font-semibold text-gray-900">176</dd>
             </dl>
           </div>
@@ -105,11 +107,11 @@ export default function DashboardStats() {
           <div className="ml-5 w-0 flex-1">
             <dl>
               <dt className="text-sm font-medium text-gray-500">Revenue</dt>
-              <dd className="text-2xl font-semibold text-gray-900">$24,500</dd>
+              <dd className="text-2xl font-semibold text-gray-900">₦24,500</dd>
             </dl>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}
