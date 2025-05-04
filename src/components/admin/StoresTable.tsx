@@ -88,11 +88,18 @@ export default function StoresTable() {
           <select
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="border rounded px-2 py-1 text-dark"
+            className="border rounded px-2 py-1"
+            style={{ color: "black" }}
           >
-            <option value="ACTIVE">Active Stores</option>
-            <option value="PENDING">Pending Stores</option>
-            <option value="SUSPENDED">Suspended Stores</option>
+            <option style={{ color: "black" }} value="ACTIVE">
+              Active Stores
+            </option>
+            <option style={{ color: "black" }} value="PENDING">
+              Pending Stores
+            </option>
+            <option style={{ color: "black" }} value="SUSPENDED">
+              Suspended Stores
+            </option>
           </select>
 
           <input
@@ -100,7 +107,8 @@ export default function StoresTable() {
             placeholder="Search stores..."
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            className="border rounded px-2 py-1 text-dark"
+            className="border rounded px-2 py-1"
+            style={{ color: "black" }}
           />
         </div>
       </div>
