@@ -2,16 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['localhost'],
+    domains: ["localhost"],
   },
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: "/:path*",
         headers: [
           {
-            key: 'Access-Control-Allow-Origin',
-            value: 'https://logistics-backend-1-s91j.onrender.com',
+            key: "Access-Control-Allow-Origin",
+            value: "https://logistics-backend-1-s91j.onrender.com",
           },
         ],
       },

@@ -169,6 +169,12 @@ export interface StoreMetrics {
   totalProducts: number;
 }
 
+export interface StorePaymentDetails {
+  accountName: string;
+  accountNumber: string;
+  bankName: string;
+}
+
 export interface Store {
   _id: string;
   userId: {
@@ -183,6 +189,7 @@ export interface Store {
   address: StoreAddress;
   settings: StoreSettings;
   metrics: StoreMetrics;
+  paymentDetails?: StorePaymentDetails;
   createdAt: string;
   updatedAt: string;
   slug: string;
@@ -220,4 +227,87 @@ export interface PaymentNotification {
 export interface PaymentNotificationsResponse {
   notifications: PaymentNotification[];
   total: number;
+}
+
+export interface OrderDetails {
+  orderId: string;
+  trackingNumber: string;
+  status: OrderStatus;
+  createdAt: string;
+  consumer: {
+    _id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+  } | null;
+  items: {
+    productId: string;
+    storeId: {
+      _id: string;
+    };
+    quantity: number;
+    price: number;
+    variantData: any[];
+    _id: string;
+    productName: string;
+    productDescription: string;
+    store: {
+      storeName: string;
+      storeId: string;
+      contactInfo: {
+        email: string;
+        phone: string;
+        whatsapp: string;
+      };
+    };
+  }[];
+  deliveryDetails: {
+    pickupAddress: {
+      type: string;
+      manualAddress: {
+        street: string;
+        city: string;
+        state: string;
+        country: string;
+        postalCode: string;
+        recipientName: string;
+        recipientPhone: string;
+        recipientEmail: string;
+      };
+    };
+    deliveryAddress: {
+      street: string;
+      city: string;
+      state: string;
+      country: string;
+      postalCode: string;
+      recipientName: string;
+      recipientPhone: string;
+      recipientEmail: string;
+    };
+    packageSize: 'SMALL' | 'MEDIUM' | 'LARGE';
+    isExpressDelivery: boolean;
+    estimatedDeliveryDate: string;
+  };
+  paymentDetails: {
+    receipts: any[];
+    priceBreakdown: {
+      productTotal: number;
+      deliveryFee: number;
+      total: number;
+    };
+  };
+}
+
+export interface PaginationInfo {
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
+export interface OrdersResponse {
+  orders: Order[];
+  pagination: PaginationInfo;
 } 

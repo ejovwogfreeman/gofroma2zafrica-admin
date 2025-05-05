@@ -1,4 +1,4 @@
-import { LoginCredentials, LoginResponse, User, Order, OrderStats, Zone, Store, StoresResponse, ConsumerStats, OrderStatus, OrderStatusUpdateResponse } from './types';
+import { LoginCredentials, LoginResponse, User, Order, OrderStats, Zone, Store, StoresResponse, ConsumerStats, OrderStatus, OrderStatusUpdateResponse, OrderDetails, StorePaymentDetails, StoreContactInfo } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://logistics-backend-1-s91j.onrender.com';
 
@@ -169,6 +169,23 @@ export async function updateOrderStatus(
     order: data.data.order,
     emailSent: data.data.emailSent
   };
+}
+
+export async function getOrderDetails(orderId: string): Promise<OrderDetails> {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/api/admin/orders/${orderId}/receipts`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to fetch order details');
+  }
+  
+  const data = await response.json();
+  return data.data;
 }
 
 // Zone APIs
@@ -364,4 +381,26 @@ export async function markNotificationAsRead(notificationId: string): Promise<vo
   );
 
   if (!response.ok) throw new Error('Failed to mark notification as read');
+}
+
+export async function getStorePaymentDetails(storeId: string): Promise<{
+  storeId: string;
+  storeName: string;
+  paymentDetails: StorePaymentDetails;
+  contactInfo: StoreContactInfo;
+}> {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/payment-details`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to fetch store payment details');
+  }
+  
+  const data = await response.json();
+  return data.data;
 }

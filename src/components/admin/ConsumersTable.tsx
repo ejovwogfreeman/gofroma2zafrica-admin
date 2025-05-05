@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getConsumers } from '@/lib/api';
-import { Consumer } from '@/lib/types';
-import { formatDate } from '@/lib/utils';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getConsumers } from "@/lib/api";
+import { Consumer } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 
 interface ConsumersTableProps {
   searchParams: {
@@ -14,7 +14,10 @@ interface ConsumersTableProps {
   setSearchParams: (params: { status: string; search: string }) => void;
 }
 
-export default function ConsumersTable({ searchParams, setSearchParams }: ConsumersTableProps) {
+export default function ConsumersTable({
+  searchParams,
+  setSearchParams,
+}: ConsumersTableProps) {
   const router = useRouter();
   const [consumers, setConsumers] = useState<Consumer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,13 +41,13 @@ export default function ConsumersTable({ searchParams, setSearchParams }: Consum
         ...searchParams,
       });
       setConsumers(data.consumers);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         total: data.pagination.total,
         pages: data.pagination.pages,
       }));
     } catch (error) {
-      console.error('Failed to fetch consumers:', error);
+      console.error("Failed to fetch consumers:", error);
     } finally {
       setLoading(false);
     }
@@ -59,12 +62,18 @@ export default function ConsumersTable({ searchParams, setSearchParams }: Consum
             placeholder="Search consumers..."
             className="rounded-md border border-gray-300 px-4 py-2 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
             value={searchParams.search}
-            onChange={(e) => setSearchParams({ ...searchParams, search: e.target.value })}
+            onChange={(e) =>
+              setSearchParams({ ...searchParams, search: e.target.value })
+            }
+            style={{ color: "black" }}
           />
           <select
             className="rounded-md border border-gray-300 px-4 py-2 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
             value={searchParams.status}
-            onChange={(e) => setSearchParams({ ...searchParams, status: e.target.value })}
+            onChange={(e) =>
+              setSearchParams({ ...searchParams, status: e.target.value })
+            }
+            style={{ color: "black" }}
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -79,23 +88,39 @@ export default function ConsumersTable({ searchParams, setSearchParams }: Consum
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th>
-                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
-                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Phone</th>
-                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Last Login</th>
+                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Name
+                  </th>
+                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Email
+                  </th>
+                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Phone
+                  </th>
+                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Status
+                  </th>
+                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Last Login
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-3 py-4 text-center text-sm text-gray-500">
+                    <td
+                      colSpan={5}
+                      className="px-3 py-4 text-center text-sm text-gray-500"
+                    >
                       Loading...
                     </td>
                   </tr>
                 ) : consumers.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-3 py-4 text-center text-sm text-gray-500">
+                    <td
+                      colSpan={5}
+                      className="px-3 py-4 text-center text-sm text-gray-500"
+                    >
                       No consumers found
                     </td>
                   </tr>
@@ -114,16 +139,18 @@ export default function ConsumersTable({ searchParams, setSearchParams }: Consum
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
                         <span
                           className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                            consumer.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
+                            consumer.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
                           }`}
                         >
                           {consumer.status}
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {consumer.lastLoginAt ? formatDate(consumer.lastLoginAt) : 'Never'}
+                        {consumer.lastLoginAt
+                          ? formatDate(consumer.lastLoginAt)
+                          : "Never"}
                       </td>
                     </tr>
                   ))
@@ -138,7 +165,9 @@ export default function ConsumersTable({ searchParams, setSearchParams }: Consum
       <div className="mt-4 flex items-center justify-between">
         <div className="flex flex-1 justify-between">
           <button
-            onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+            onClick={() =>
+              setPagination((prev) => ({ ...prev, page: prev.page - 1 }))
+            }
             disabled={pagination.page === 1}
             className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -148,7 +177,9 @@ export default function ConsumersTable({ searchParams, setSearchParams }: Consum
             Page {pagination.page} of {pagination.pages}
           </span>
           <button
-            onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+            onClick={() =>
+              setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
+            }
             disabled={pagination.page === pagination.pages}
             className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -158,4 +189,4 @@ export default function ConsumersTable({ searchParams, setSearchParams }: Consum
       </div>
     </div>
   );
-} 
+}

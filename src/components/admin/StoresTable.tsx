@@ -1,8 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getStores, updateStoreStatus } from "@/lib/api";
-import { Store, StorePagination } from "@/lib/types";
+import {
+  getStores,
+  updateStoreStatus,
+  getStorePaymentDetails,
+} from "@/lib/api";
+import {
+  Store,
+  StorePagination,
+  StorePaymentDetails,
+  StoreContactInfo,
+} from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default function StoresTable() {
@@ -22,6 +31,13 @@ export default function StoresTable() {
     category: "",
     search: "",
   });
+  const [selectedStore, setSelectedStore] = useState<{
+    storeId: string;
+    storeName: string;
+    paymentDetails: StorePaymentDetails;
+    contactInfo: StoreContactInfo;
+  } | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     fetchStores();
@@ -29,8 +45,8 @@ export default function StoresTable() {
 
   const fetchStores = async () => {
     try {
-      setLoading(true);
       setError(null);
+      if (!filters.search) setLoading(true);
       const data = await getStores(filters);
       setStores(data.stores);
       setPagination(data.pagination);
@@ -55,6 +71,16 @@ export default function StoresTable() {
       );
     } catch (error) {
       console.error("Failed to update store status:", error);
+    }
+  };
+
+  const handleViewPaymentDetails = async (storeId: string) => {
+    try {
+      const data = await getStorePaymentDetails(storeId);
+      setSelectedStore(data);
+      setShowPaymentModal(true);
+    } catch (error) {
+      console.error("Failed to fetch payment details:", error);
     }
   };
 
@@ -91,15 +117,9 @@ export default function StoresTable() {
             className="border rounded px-2 py-1"
             style={{ color: "black" }}
           >
-            <option style={{ color: "black" }} value="ACTIVE">
-              Active Stores
-            </option>
-            <option style={{ color: "black" }} value="PENDING">
-              Pending Stores
-            </option>
-            <option style={{ color: "black" }} value="SUSPENDED">
-              Suspended Stores
-            </option>
+            <option value="ACTIVE">Active Stores</option>
+            <option value="PENDING">Pending Stores</option>
+            <option value="SUSPENDED">Suspended Stores</option>
           </select>
 
           <input
@@ -172,6 +192,12 @@ export default function StoresTable() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end space-x-2">
+                    <button
+                      onClick={() => handleViewPaymentDetails(store._id)}
+                      className="text-indigo-600 hover:text-indigo-900"
+                    >
+                      View Payment Details
+                    </button>
                     {store.status === "ACTIVE" && (
                       <button
                         onClick={() =>
@@ -205,6 +231,89 @@ export default function StoresTable() {
           </tbody>
         </table>
       </div>
+
+      {/* Payment Details Modal */}
+      {showPaymentModal && selectedStore && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-medium text-gray-900">
+                Payment Details - {selectedStore.storeName}
+              </h3>
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <span className="sr-only">Close</span>
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">
+                  Bank Details
+                </h4>
+                <div className="mt-2 space-y-2">
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Account Name:</span>{" "}
+                    {selectedStore.paymentDetails.accountName}
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Account Number:</span>{" "}
+                    {selectedStore.paymentDetails.accountNumber}
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Bank Name:</span>{" "}
+                    {selectedStore.paymentDetails.bankName}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">
+                  Contact Information
+                </h4>
+                <div className="mt-2 space-y-2">
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Email:</span>{" "}
+                    {selectedStore.contactInfo.email}
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Phone:</span>{" "}
+                    {selectedStore.contactInfo.phone}
+                  </p>
+                  {selectedStore.contactInfo.whatsapp && (
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">WhatsApp:</span>{" "}
+                      {selectedStore.contactInfo.whatsapp}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button
+                type="button"
+                onClick={() => setShowPaymentModal(false)}
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Pagination */}
       <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
