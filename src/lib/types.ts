@@ -194,6 +194,10 @@ export interface Store {
   updatedAt: string;
   slug: string;
   storeUrl: string;
+  isFeatured: boolean;
+  displayOrder: number;
+  adminNotes?: string;
+  featuredUntil?: string;
 }
 
 export interface StorePagination {
@@ -310,4 +314,77 @@ export interface PaginationInfo {
 export interface OrdersResponse {
   orders: Order[];
   pagination: PaginationInfo;
-} 
+}
+
+export interface StoreImage {
+  url: string;
+  publicId: string;
+}
+
+export interface StoreListResponse {
+  stores: {
+    _id: string;
+    userId: string;
+    storeName: string;
+    description: string;
+    category: 'FASHION' | 'ELECTRONICS' | 'OTHER';
+    status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
+    contactInfo: StoreContactInfo;
+    address: StoreAddress;
+    image?: StoreImage;
+    settings: StoreSettings;
+    metrics: StoreMetrics;
+    paymentDetails?: StorePaymentDetails;
+    createdAt: string;
+    updatedAt: string;
+    slug: string;
+    storeUrl: string;
+    isFeatured: boolean;
+    displayOrder: number;
+    adminNotes?: string;
+    featuredUntil?: string;
+  }[];
+  pagination: {
+    total: number;
+    page: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+}
+
+export interface StoreOrderUpdateRequest {
+  displayOrder: number;
+  isFeatured: boolean;
+  featuredUntil?: string;
+  adminNotes?: string;
+}
+
+export interface StoreBulkOrderUpdateRequest {
+  stores: {
+    storeId: string;
+    displayOrder: number;
+  }[];
+}
+
+export interface StoreOrderUpdateResponse {
+  contactInfo: StoreContactInfo;
+  address: StoreAddress;
+  image?: StoreImage;
+  settings: StoreSettings;
+  metrics: StoreMetrics;
+  _id: string;
+  userId: string;
+  storeName: string;
+  description: string;
+  category: 'FASHION' | 'ELECTRONICS' | 'OTHER';
+  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
+  createdAt: string;
+  updatedAt: string;
+  slug: string;
+  adminNotes?: string;
+  displayOrder: number;
+  featuredUntil?: string;
+  isFeatured: boolean;
+  storeUrl: string;
+}
+

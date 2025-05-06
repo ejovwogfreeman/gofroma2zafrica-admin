@@ -1,4 +1,4 @@
-import { LoginCredentials, LoginResponse, User, Order, OrderStats, Zone, Store, StoresResponse, ConsumerStats, OrderStatus, OrderStatusUpdateResponse, OrderDetails, StorePaymentDetails, StoreContactInfo } from './types';
+import { LoginCredentials, LoginResponse, User, Order, OrderStats, Zone, Store, StoresResponse, ConsumerStats, OrderStatus, OrderStatusUpdateResponse, OrderDetails, StorePaymentDetails, StoreContactInfo, StoreListResponse, StoreOrderUpdateRequest, StoreOrderUpdateResponse, StoreBulkOrderUpdateRequest } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://logistics-backend-1-s91j.onrender.com';
 
@@ -403,4 +403,65 @@ export async function getStorePaymentDetails(storeId: string): Promise<{
   
   const data = await response.json();
   return data.data;
+}
+
+export async function getStoreList(): Promise<StoreListResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/stores/list`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to fetch store list');
+  }
+  
+  const data = await response.json();
+  return data.data;
+}
+
+export async function updateStoreOrder(
+  storeId: string,
+  orderData: StoreOrderUpdateRequest
+): Promise<StoreOrderUpdateResponse> {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/order`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to update store order');
+  }
+  
+  const data = await response.json();
+  return data.data;
+}
+
+export async function bulkUpdateStoreOrder(
+  stores: { storeId: string; displayOrder: number }[]
+): Promise<{ success: boolean; message: string }> {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_BASE_URL}/api/admin/stores/bulk-order`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ stores }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to update store orders');
+  }
+  
+  const data = await response.json();
+  return data;
 }
