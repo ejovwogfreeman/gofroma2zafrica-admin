@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { getUsers } from "@/lib/api";
+import { getOrderStats } from "@/lib/api";
+import { formatCurrency } from "@/lib/utils";
 
 export default function DashboardStats() {
+  const [orderStats, setOrderStats] = useState({});
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeOrders: 0,
@@ -15,10 +18,12 @@ export default function DashboardStats() {
     const fetchStats = async () => {
       try {
         const { users, pagination } = await getUsers(1, 1);
+        const data = await getOrderStats();
         setStats((prev) => ({
           ...prev,
           totalUsers: pagination.total,
         }));
+        setOrderStats(data);
       } catch (error) {
         console.error("Failed to fetch stats:", error);
       } finally {
@@ -28,6 +33,8 @@ export default function DashboardStats() {
 
     fetchStats();
   }, []);
+
+  // console.log(orderStats);
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -81,7 +88,10 @@ export default function DashboardStats() {
               <dt className="text-sm font-medium text-gray-500">
                 Active Orders
               </dt>
-              <dd className="text-2xl font-semibold text-gray-900">176</dd>
+              <dd className="text-2xl font-semibold text-gray-900">
+                {" "}
+                {loading ? "..." : orderStats.total}
+              </dd>
             </dl>
           </div>
         </div>
@@ -107,7 +117,9 @@ export default function DashboardStats() {
           <div className="ml-5 w-0 flex-1">
             <dl>
               <dt className="text-sm font-medium text-gray-500">Revenue</dt>
-              <dd className="text-2xl font-semibold text-gray-900">₦24,500</dd>
+              <dd className="text-2xl font-semibold text-gray-900">
+                {loading ? "..." : formatCurrency(orderStats.revenue.total)}
+              </dd>
             </dl>
           </div>
         </div>
