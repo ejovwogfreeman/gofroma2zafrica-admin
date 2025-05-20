@@ -1,17 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getUsers } from "@/lib/api";
-import { getOrderStats } from "@/lib/api";
+import { getUsers, getOrderStats } from "@/lib/api";
+import { OrderStats as OrderStatsType } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
 
 export default function DashboardStats() {
-  const [orderStats, setOrderStats] = useState({});
+  const [order, setOrder] = useState<OrderStatsType>({
+    total: 0,
+    totalDelivered: 0,
+    totalPending: 0,
+    totalInTransit: 0,
+    totalCancelled: 0,
+    totalFailedDelivery: 0,
+    todayOrders: 0,
+    todayDelivered: 0,
+    revenue: {
+      total: 0,
+      today: 0,
+    },
+  });
+
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeOrders: 0,
     totalRevenue: 0,
   });
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,7 +38,7 @@ export default function DashboardStats() {
           ...prev,
           totalUsers: pagination.total,
         }));
-        setOrderStats(data);
+        setOrder(data);
       } catch (error) {
         console.error("Failed to fetch stats:", error);
       } finally {
@@ -33,8 +48,6 @@ export default function DashboardStats() {
 
     fetchStats();
   }, []);
-
-  // console.log(orderStats);
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -89,8 +102,7 @@ export default function DashboardStats() {
                 Active Orders
               </dt>
               <dd className="text-2xl font-semibold text-gray-900">
-                {" "}
-                {loading ? "..." : orderStats.total}
+                {loading ? "..." : order.total}
               </dd>
             </dl>
           </div>
@@ -118,7 +130,7 @@ export default function DashboardStats() {
             <dl>
               <dt className="text-sm font-medium text-gray-500">Revenue</dt>
               <dd className="text-2xl font-semibold text-gray-900">
-                {loading ? "..." : formatCurrency(orderStats.revenue.total)}
+                {loading ? "..." : formatCurrency(order.revenue.total)}
               </dd>
             </dl>
           </div>

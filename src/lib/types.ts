@@ -26,7 +26,7 @@ export interface User {
   name: string;
   phone: string;
   isEmailVerified: boolean;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
   verificationCode?: string;
@@ -72,22 +72,22 @@ export interface OrderStats {
   };
 }
 
-export type OrderStatus = 
-  | 'PENDING' 
-  | 'CONFIRMED' 
-  | 'READY_FOR_PICKUP'
-  | 'PICKED_UP' 
-  | 'IN_TRANSIT' 
-  | 'DELIVERED' 
-  | 'CANCELLED' 
-  | 'FAILED_DELIVERY';
+export type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "READY_FOR_PICKUP"
+  | "PICKED_UP"
+  | "IN_TRANSIT"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "FAILED_DELIVERY";
 
 export interface Order {
   _id: string;
   userId: string;
   trackingNumber: string;
   status: OrderStatus;
-  packageSize: 'SMALL' | 'MEDIUM' | 'LARGE';
+  packageSize: "SMALL" | "MEDIUM" | "LARGE";
   price: number;
   isFragile: boolean;
   isExpressDelivery: boolean;
@@ -109,7 +109,7 @@ export interface Consumer {
   lastName: string;
   phone: string;
   isEmailVerified: boolean;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
   lastLoginAt?: string;
@@ -183,8 +183,8 @@ export interface Store {
   };
   storeName: string;
   description: string;
-  category: 'FASHION' | 'ELECTRONICS' | 'OTHER';
-  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
+  category: "FASHION" | "ELECTRONICS" | "OTHER";
+  status: "ACTIVE" | "PENDING" | "SUSPENDED";
   contactInfo: StoreContactInfo;
   address: StoreAddress;
   settings: StoreSettings;
@@ -222,8 +222,8 @@ export interface PaymentNotificationDetails {
 export interface PaymentNotification {
   _id: string;
   orderId: string;
-  type: 'NEW_PAYMENT';
-  status: 'READ' | 'UNREAD';
+  type: "NEW_PAYMENT";
+  status: "READ" | "UNREAD";
   details: PaymentNotificationDetails;
   createdAt: string;
 }
@@ -290,7 +290,7 @@ export interface OrderDetails {
       recipientPhone: string;
       recipientEmail: string;
     };
-    packageSize: 'SMALL' | 'MEDIUM' | 'LARGE';
+    packageSize: "SMALL" | "MEDIUM" | "LARGE";
     isExpressDelivery: boolean;
     estimatedDeliveryDate: string;
   };
@@ -327,8 +327,8 @@ export interface StoreListResponse {
     userId: string;
     storeName: string;
     description: string;
-    category: 'FASHION' | 'ELECTRONICS' | 'OTHER';
-    status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
+    category: "FASHION" | "ELECTRONICS" | "OTHER";
+    status: "ACTIVE" | "PENDING" | "SUSPENDED";
     contactInfo: StoreContactInfo;
     address: StoreAddress;
     image?: StoreImage;
@@ -376,8 +376,8 @@ export interface StoreOrderUpdateResponse {
   userId: string;
   storeName: string;
   description: string;
-  category: 'FASHION' | 'ELECTRONICS' | 'OTHER';
-  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
+  category: "FASHION" | "ELECTRONICS" | "OTHER";
+  status: "ACTIVE" | "PENDING" | "SUSPENDED";
   createdAt: string;
   updatedAt: string;
   slug: string;
@@ -387,4 +387,3 @@ export interface StoreOrderUpdateResponse {
   isFeatured: boolean;
   storeUrl: string;
 }
-
