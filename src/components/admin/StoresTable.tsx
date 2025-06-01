@@ -210,6 +210,7 @@ export default function StoresTable() {
           _id: updatedStore.userId,
           email: selectedStoreForOrder.userId.email,
         },
+        isOpen: selectedStoreForOrder.isOpen,
       };
       setStores(
         stores.map((store) =>
