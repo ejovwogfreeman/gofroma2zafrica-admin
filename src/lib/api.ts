@@ -1,22 +1,45 @@
-import { LoginCredentials, LoginResponse, User, Order, OrderStats, Zone, Store, StoresResponse, ConsumerStats, OrderStatus, OrderStatusUpdateResponse, OrderDetails, StorePaymentDetails, StoreContactInfo, StoreListResponse, StoreOrderUpdateRequest, StoreOrderUpdateResponse, StoreBulkOrderUpdateRequest } from './types';
+import {
+  LoginCredentials,
+  LoginResponse,
+  User,
+  Order,
+  OrderStats,
+  Zone,
+  Store,
+  StoresResponse,
+  ConsumerStats,
+  OrderStatus,
+  OrderStatusUpdateResponse,
+  OrderDetails,
+  StorePaymentDetails,
+  StoreContactInfo,
+  StoreListResponse,
+  StoreOrderUpdateRequest,
+  StoreOrderUpdateResponse,
+  StoreBulkOrderUpdateRequest,
+} from "./types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://logistics-backend-1-s91j.onrender.com';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://logistics-backend-1-s91j.onrender.com";
 
 // Auth APIs
-export async function loginAdmin(credentials: LoginCredentials): Promise<LoginResponse> {
+export async function loginAdmin(
+  credentials: LoginCredentials
+): Promise<LoginResponse> {
   const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
 
-  if (!response.ok) throw new Error('Login failed');
+  if (!response.ok) throw new Error("Login failed");
   return response.json();
 }
 
 // User APIs
 export async function getUsers(page = 1, limit = 10) {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(
     `${API_BASE_URL}/api/admin/users?page=${page}&limit=${limit}`,
     {
@@ -27,25 +50,24 @@ export async function getUsers(page = 1, limit = 10) {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch users');
+    throw new Error("Failed to fetch users");
   }
 
   const data = await response.json();
   return data.data;
 }
 
-export async function getUserDetails(userId: string): Promise<{ user: User, orders: Order[] }> {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(
-    `${API_BASE_URL}/api/admin/users/${userId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export async function getUserDetails(
+  userId: string
+): Promise<{ user: User; orders: Order[] }> {
+  const token = localStorage.getItem("adminToken");
+  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  if (!response.ok) throw new Error('Failed to fetch user details');
+  if (!response.ok) throw new Error("Failed to fetch user details");
   const data = await response.json();
   return data.data;
 }
@@ -57,10 +79,10 @@ export async function getConsumers(params: {
   status?: string;
   search?: string;
 }) {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const queryParams = new URLSearchParams({
-    page: params.page?.toString() || '1',
-    limit: params.limit?.toString() || '10',
+    page: params.page?.toString() || "1",
+    limit: params.limit?.toString() || "10",
     ...(params.status && { status: params.status }),
     ...(params.search && { search: params.search }),
   });
@@ -75,7 +97,7 @@ export async function getConsumers(params: {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch consumers');
+    throw new Error("Failed to fetch consumers");
   }
 
   const data = await response.json();
@@ -83,31 +105,28 @@ export async function getConsumers(params: {
 }
 
 export async function getConsumerStats(): Promise<ConsumerStats> {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(
-    `${API_BASE_URL}/api/admin/consumers/stats`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const token = localStorage.getItem("adminToken");
+  const response = await fetch(`${API_BASE_URL}/api/admin/consumers/stats`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  if (!response.ok) throw new Error('Failed to fetch consumer stats');
+  if (!response.ok) throw new Error("Failed to fetch consumer stats");
   const data = await response.json();
   return data.data;
 }
 
 // Order APIs
 export async function getOrderStats(): Promise<OrderStats> {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(`${API_BASE_URL}/api/admin/orders/stats`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  if (!response.ok) throw new Error('Failed to fetch order stats');
+  if (!response.ok) throw new Error("Failed to fetch order stats");
   const data = await response.json();
   return data.data;
 }
@@ -119,10 +138,10 @@ export async function getOrders(params: {
   startDate?: string;
   endDate?: string;
 }) {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const queryParams = new URLSearchParams({
-    page: params.page?.toString() || '1',
-    limit: params.limit?.toString() || '10',
+    page: params.page?.toString() || "1",
+    limit: params.limit?.toString() || "10",
     ...(params.status && { status: params.status }),
     ...(params.startDate && { startDate: params.startDate }),
     ...(params.endDate && { endDate: params.endDate }),
@@ -138,7 +157,7 @@ export async function getOrders(params: {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch orders');
+    throw new Error("Failed to fetch orders");
   }
 
   const data = await response.json();
@@ -146,71 +165,77 @@ export async function getOrders(params: {
 }
 
 export async function updateOrderStatus(
-  orderId: string, 
+  orderId: string,
   status: OrderStatus,
   notes?: string
 ): Promise<OrderStatusUpdateResponse> {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_BASE_URL}/api/admin/orders/${orderId}/status`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ 
-      status, 
-      notes 
-    }),
-  });
+  const token = localStorage.getItem("adminToken");
+  const response = await fetch(
+    `${API_BASE_URL}/api/admin/orders/${orderId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status,
+        notes,
+      }),
+    }
+  );
 
-  if (!response.ok) throw new Error('Failed to update order status');
+  if (!response.ok) throw new Error("Failed to update order status");
   const data = await response.json();
   return {
     order: data.data.order,
-    emailSent: data.data.emailSent
+    emailSent: data.data.emailSent,
   };
 }
 
 export async function getOrderDetails(orderId: string): Promise<OrderDetails> {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_BASE_URL}/api/admin/orders/${orderId}/receipts`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const token = localStorage.getItem("adminToken");
+  const response = await fetch(
+    `${API_BASE_URL}/api/admin/orders/${orderId}/receipts`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Failed to fetch order details');
+    throw new Error(errorData.message || "Failed to fetch order details");
   }
-  
+
   const data = await response.json();
   return data.data;
 }
 
 // Zone APIs
 export async function getZones(): Promise<Zone[]> {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(`${API_BASE_URL}/api/zones`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  if (!response.ok) throw new Error('Failed to fetch zones');
+  if (!response.ok) throw new Error("Failed to fetch zones");
   const data = await response.json();
   return data.data;
 }
 
 export async function getActiveZones(): Promise<Zone[]> {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(`${API_BASE_URL}/api/zones/active`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  if (!response.ok) throw new Error('Failed to fetch active zones');
+  if (!response.ok) throw new Error("Failed to fetch active zones");
   const data = await response.json();
   return data.data;
 }
@@ -220,32 +245,32 @@ export async function createZone(zoneData: {
   deliveryPrice: number;
   isActive: boolean;
 }): Promise<Zone> {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(`${API_BASE_URL}/api/zones`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       name: zoneData.name,
       deliveryPrice: zoneData.deliveryPrice,
-      isActive: zoneData.isActive
+      isActive: zoneData.isActive,
     }),
   });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    console.error('API Error:', errorData);
-    throw new Error(errorData.message || 'Failed to create zone');
+    console.error("API Error:", errorData);
+    throw new Error(errorData.message || "Failed to create zone");
   }
-  
+
   const data = await response.json();
   return data.data;
 }
 
 export async function updateZone(
-  id: string, 
+  id: string,
   zoneData: {
     name?: string;
     deliveryPrice?: number;
@@ -253,11 +278,11 @@ export async function updateZone(
     isActive?: boolean;
   }
 ): Promise<Zone> {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(`${API_BASE_URL}/api/zones/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(zoneData),
@@ -265,23 +290,23 @@ export async function updateZone(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Failed to update zone');
+    throw new Error(errorData.message || "Failed to update zone");
   }
-  
+
   const data = await response.json();
   return data.data;
 }
 
 export async function deleteZone(id: string): Promise<void> {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(`${API_BASE_URL}/api/zones/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  if (!response.ok) throw new Error('Failed to delete zone');
+  if (!response.ok) throw new Error("Failed to delete zone");
 }
 
 export async function getStores(params?: {
@@ -292,7 +317,7 @@ export async function getStores(params?: {
   minRevenue?: number;
   search?: string;
 }): Promise<StoresResponse> {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const queryParams = new URLSearchParams();
 
   if (params) {
@@ -303,55 +328,65 @@ export async function getStores(params?: {
     });
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/admin/stores?${queryParams}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/admin/stores?${queryParams}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('API Error Response:', errorText);
-    throw new Error(`Failed to fetch stores: ${response.status} ${response.statusText}`);
+    console.error("API Error Response:", errorText);
+    throw new Error(
+      `Failed to fetch stores: ${response.status} ${response.statusText}`
+    );
   }
 
   const data = await response.json();
-  
+
   // Add logging to verify the structure
-  console.log('Stores API Response:', data);
+  console.log("Stores API Response:", data);
 
   // Ensure the response matches the expected structure
   if (!data.success || !data.data) {
-    throw new Error('Invalid response structure');
+    throw new Error("Invalid response structure");
   }
 
   return data.data;
 }
 
 export async function updateStoreStatus(
-  storeId: string, 
-  status: 'ACTIVE' | 'SUSPENDED'
+  storeId: string,
+  status: "ACTIVE" | "SUSPENDED"
 ): Promise<Store> {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/status`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ status }),
-  });
+  const token = localStorage.getItem("adminToken");
+  const response = await fetch(
+    `${API_BASE_URL}/api/admin/stores/${storeId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    }
+  );
 
-  if (!response.ok) throw new Error('Failed to update store status');
+  if (!response.ok) throw new Error("Failed to update store status");
   const data = await response.json();
   return data.data;
 }
 
-export async function getPaymentNotifications(params: { page?: number; limit?: number } = {}) {
-  const token = localStorage.getItem('adminToken');
+export async function getPaymentNotifications(
+  params: { page?: number; limit?: number } = {}
+) {
+  const token = localStorage.getItem("adminToken");
   const queryParams = new URLSearchParams({
-    page: params.page?.toString() || '1',
-    limit: params.limit?.toString() || '10',
+    page: params.page?.toString() || "1",
+    limit: params.limit?.toString() || "10",
   });
 
   const response = await fetch(
@@ -363,24 +398,26 @@ export async function getPaymentNotifications(params: { page?: number; limit?: n
     }
   );
 
-  if (!response.ok) throw new Error('Failed to fetch payment notifications');
+  if (!response.ok) throw new Error("Failed to fetch payment notifications");
   const data = await response.json();
   return data.data;
 }
 
-export async function markNotificationAsRead(notificationId: string): Promise<void> {
-  const token = localStorage.getItem('adminToken');
+export async function markNotificationAsRead(
+  notificationId: string
+): Promise<void> {
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(
     `${API_BASE_URL}/api/admin/notifications/${notificationId}/mark-read`,
     {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
   );
 
-  if (!response.ok) throw new Error('Failed to mark notification as read');
+  if (!response.ok) throw new Error("Failed to mark notification as read");
 }
 
 export async function getStorePaymentDetails(storeId: string): Promise<{
@@ -389,18 +426,23 @@ export async function getStorePaymentDetails(storeId: string): Promise<{
   paymentDetails: StorePaymentDetails;
   contactInfo: StoreContactInfo;
 }> {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/payment-details`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const token = localStorage.getItem("adminToken");
+  const response = await fetch(
+    `${API_BASE_URL}/api/admin/stores/${storeId}/payment-details`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Failed to fetch store payment details');
+    throw new Error(
+      errorData.message || "Failed to fetch store payment details"
+    );
   }
-  
+
   const data = await response.json();
   return data.data;
 }
@@ -408,15 +450,15 @@ export async function getStorePaymentDetails(storeId: string): Promise<{
 export async function getStoreList(): Promise<StoreListResponse> {
   const response = await fetch(`${API_BASE_URL}/api/stores/list`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Failed to fetch store list');
+    throw new Error(errorData.message || "Failed to fetch store list");
   }
-  
+
   const data = await response.json();
   return data.data;
 }
@@ -425,21 +467,24 @@ export async function updateStoreOrder(
   storeId: string,
   orderData: StoreOrderUpdateRequest
 ): Promise<StoreOrderUpdateResponse> {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/order`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(orderData),
-  });
+  const token = localStorage.getItem("adminToken");
+  const response = await fetch(
+    `${API_BASE_URL}/api/admin/stores/${storeId}/order`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(orderData),
+    }
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Failed to update store order');
+    throw new Error(errorData.message || "Failed to update store order");
   }
-  
+
   const data = await response.json();
   return data.data;
 }
@@ -447,11 +492,11 @@ export async function updateStoreOrder(
 export async function bulkUpdateStoreOrder(
   stores: { storeId: string; displayOrder: number }[]
 ): Promise<{ success: boolean; message: string }> {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const response = await fetch(`${API_BASE_URL}/api/admin/stores/bulk-order`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ stores }),
@@ -459,9 +504,41 @@ export async function bulkUpdateStoreOrder(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Failed to update store orders');
+    throw new Error(errorData.message || "Failed to update store orders");
   }
-  
+
   const data = await response.json();
   return data;
 }
+
+export const checkAndToggleStore = async (storeId: string, isOpen: boolean) => {
+  const token = localStorage.getItem("adminToken");
+  if (!token) {
+    throw new Error("No authorization token found");
+  }
+
+  const url = `${API_BASE_URL}/api/admin/stores/${storeId}/${
+    isOpen ? "close" : "open"
+  }`;
+
+  try {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to toggle store");
+    }
+
+    return data; // contains updated store data if your backend returns it
+  } catch (error: any) {
+    console.error("Toggle Store Error:", error.message);
+    throw new Error(error.message || "Unexpected error");
+  }
+};

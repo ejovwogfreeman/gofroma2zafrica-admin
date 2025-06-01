@@ -7,6 +7,7 @@ import {
   getStorePaymentDetails,
   updateStoreOrder,
   bulkUpdateStoreOrder,
+  checkAndToggleStore,
 } from "@/lib/api";
 import {
   Store,
@@ -88,6 +89,100 @@ export default function StoresTable() {
       );
     } catch (error) {
       console.error("Failed to update store status:", error);
+    }
+  };
+
+  const [storeStatus, setStoreStatus] = useState<{
+    [storeId: string]: {
+      loading: boolean;
+      error: string | null;
+      message: string | null;
+    };
+  }>({});
+
+  // const handleCheckAndToggleStore = async (
+  //   storeId: string,
+  //   isOpen: boolean
+  // ) => {
+  //   // Set loading true for the current store
+  //   setStoreStatus((prev) => ({
+  //     ...prev,
+  //     [storeId]: { loading: true, error: null, message: null },
+  //   }));
+
+  //   try {
+  //     const result = await checkAndToggleStore(storeId, isOpen);
+
+  //     // Update local store list
+  //     setStores((prevStores) =>
+  //       prevStores.map((store) =>
+  //         store._id === storeId ? { ...store, isOpen: !isOpen } : store
+  //       )
+  //     );
+
+  //     setStoreStatus((prev) => ({
+  //       ...prev,
+  //       [storeId]: {
+  //         loading: false,
+  //         error: null,
+  //         message: `Store was ${isOpen ? "open" : "closed"} and has now been ${
+  //           isOpen ? "closed" : "opened"
+  //         }.`,
+  //       },
+  //     }));
+  //   } catch (err: any) {
+  //     setStoreStatus((prev) => ({
+  //       ...prev,
+  //       [storeId]: {
+  //         loading: false,
+  //         error: err.message || "Failed to toggle store.",
+  //         message: null,
+  //       },
+  //     }));
+  //   }
+  // };
+
+  const handleCheckAndToggleStore = async (
+    storeId: string,
+    isOpen: boolean
+  ) => {
+    setStoreStatus((prev) => ({
+      ...prev,
+      [storeId]: { loading: true, error: null, message: null },
+    }));
+
+    console.log(`Toggling store ${storeId}, currently open: ${isOpen}`);
+
+    try {
+      const result = await checkAndToggleStore(storeId, isOpen);
+      console.log("Toggle result:", result);
+
+      setStores((prevStores) =>
+        prevStores.map((store) =>
+          store._id === storeId ? { ...store, isOpen: !isOpen } : store
+        )
+      );
+
+      setStoreStatus((prev) => ({
+        ...prev,
+        [storeId]: {
+          loading: false,
+          error: null,
+          message: `Store was ${isOpen ? "open" : "closed"} and has now been ${
+            isOpen ? "closed" : "opened"
+          }.`,
+        },
+      }));
+    } catch (err: any) {
+      console.error("Toggle store error:", err);
+      setStoreStatus((prev) => ({
+        ...prev,
+        [storeId]: {
+          loading: false,
+          error: err.message || "Failed to toggle store.",
+          message: null,
+        },
+      }));
     }
   };
 
@@ -275,6 +370,15 @@ export default function StoresTable() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {renderStatusBadge(store.status)}
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      store.isOpen
+                        ? "bg-green-100 text-green-800" // Open = Success style
+                        : "bg-red-100 text-red-800" // Closed = Danger style
+                    }`}
+                  >
+                    {store.isOpen ? "Open" : "Closed"}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {store.isFeatured ? (
@@ -302,14 +406,29 @@ export default function StoresTable() {
                       View Payment Details
                     </button>
                     {store.status === "ACTIVE" && (
-                      <button
-                        onClick={() =>
-                          handleStatusChange(store._id, "SUSPENDED")
-                        }
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Suspend
-                      </button>
+                      <>
+                        <button
+                          onClick={() =>
+                            handleCheckAndToggleStore(store._id, store.isOpen)
+                          }
+                          className={`${
+                            store.isOpen
+                              ? "text-red-600 hover:text-red-900" // open store → red "Close"
+                              : "text-green-600 hover:text-green-900" // closed store → green "Open"
+                          }`}
+                        >
+                          {store.isOpen ? "Close" : "Open"}
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            handleStatusChange(store._id, "SUSPENDED")
+                          }
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Suspend
+                        </button>
+                      </>
                     )}
                     {store.status === "SUSPENDED" && (
                       <button
