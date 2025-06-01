@@ -176,6 +176,7 @@ export interface StorePaymentDetails {
 }
 
 export interface Store {
+  isOpen: boolean;
   _id: string;
   userId: {
     _id: string;
