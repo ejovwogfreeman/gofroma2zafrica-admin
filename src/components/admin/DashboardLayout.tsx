@@ -81,7 +81,7 @@
 
 // const connectToSocket = (token: string) => {
 //   if (!socket) {
-//     socket = io("https://logistics-backend-1-s91j.onrender.com", {
+//     socket = io("https://logistics-backend-yspl.onrender.com", {
 //       auth: { token },
 //     });
 //     socket.on("connect", () => {
@@ -197,10 +197,10 @@ let socket: Socket | null = null;
 
 const connectToSocket = (
   token: string,
-  setNewOrderNotification: React.Dispatch<React.SetStateAction<boolean>>
+  setNewOrderNotification: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   if (!socket) {
-    socket = io("https://logistics-backend-1-s91j.onrender.com", {
+    socket = io("https://logistics-backend-yspl.onrender.com", {
       auth: { token },
     });
 
@@ -225,7 +225,7 @@ const connectToSocket = (
 };
 
 const disconnectSocket = (
-  setNewOrderNotification: React.Dispatch<React.SetStateAction<boolean>>
+  setNewOrderNotification: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   if (socket) {
     socket.disconnect();

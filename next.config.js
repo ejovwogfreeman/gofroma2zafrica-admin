@@ -11,7 +11,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://logistics-backend-1-s91j.onrender.com",
+            value: "https://logistics-backend-yspl.onrender.com",
           },
         ],
       },
